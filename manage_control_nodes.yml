@@ -1,0 +1,28 @@
+---
+- name: Manage Control Nodes
+  hosts: controlnodes
+  become_method: sudo
+  become: yes
+  tasks:
+    - name: Ensure required packages are installed
+      package:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - openssh-server  # Ensure SSH server is installed on control nodes
+
+    - name: Configure SSHd to allow SSH access
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        line: "{{ item }}"
+        state: present
+      with_items:
+        - "PasswordAuthentication no"  # Disable password authentication
+        - "PermitRootLogin no"  # Disable root login
+      notify: Restart SSH service
+
+  handlers:
+    - name: Restart SSH service
+      ansible.builtin.service:
+        name: sshd
+        state: restarted

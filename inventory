@@ -1,3 +1,4 @@
-[controlnodes]
+[controlnode1]
 192.168.56.111
+[controlnode2]
 192.168.56.112
